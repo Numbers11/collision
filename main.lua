@@ -2,6 +2,34 @@ local QuadTree = require "quad_tree"
 PAUSE = false
 
 
+-- Calculates the minkowsky difference between 2 rects, which is another rect
+local function rect_getDiff(x1,y1,w1,h1, x2,y2,w2,h2)
+  return x2 - x1 - w1,
+         y2 - y1 - h1,
+         w1 + w2,
+         h1 + h2
+end
+
+
+local function rect_containsPoint(x,y,w,h, px,py)
+  return px - x > DELTA      and py - y > DELTA and
+         x + w - px > DELTA  and y + h - py > DELTA
+end
+
+local x,y,w,h     = rect_getDiff(x1,y1,w1,h1, x2,y2,w2,h2)
+
+if rect_containsPoint(x,y,w,h, 0,0) then -- item was intersecting other
+local px, py    = rect_getNearestCorner(x,y,w,h, 0, 0)
+local wi, hi    = min(w1, abs(px)), min(h1, abs(py)) -- area of intersection
+ti              = -wi * hi -- ti is the negative area of intersection
+overlaps = true
+
+      -- intersecting and not moving - use minimum displacement vector
+      local px, py = rect_getNearestCorner(x,y,w,h, 0,0)
+      if abs(px) < abs(py) then py = 0 else px = 0 end
+      nx, ny = sign(px), sign(py)
+      tx, ty = x1 + px, y1 + py
+
 local entities = {}
 
 function newEnt(x,y,w,h,vx,vy)
