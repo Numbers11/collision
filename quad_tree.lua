@@ -1,4 +1,4 @@
-MAX_OBJECTS = 20
+MAX_OBJECTS = 15
 MAX_LEVELS = 5
 
 local function rectIntersection(r1, r2)
@@ -48,9 +48,9 @@ function QuadTree:update(e)
 end
 
 function QuadTree:remove(e)
-    if not rectIntersection(e, self) then
-        return
-    end
+    --if not rectIntersection(e, self) then
+    --    return
+    --end
 
     --we are not at the bottom level yet
     if self.children then
@@ -60,11 +60,12 @@ function QuadTree:remove(e)
         self.children[4]:remove(e)
         return
     end    
-
-    --remove the rect
-    e.quad = nil
-    self.objects[e] = nil 
-    self.count = self.count - 1
+    if self.objects[e] then
+        --remove the rect
+        e.quad = nil
+        self.objects[e] = nil 
+        self.count = self.count - 1
+    end
 end
 
 function QuadTree:split()
